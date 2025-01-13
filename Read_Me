@@ -1,0 +1,5 @@
+This final project is a tarot reading with sensor inputs displayed onto an FHD display screen.
+
+The input uses 2 ultrasonic sensors to detect the distance away an object is from them. Whenever an object is within 0.2 feet away from the sensors, the code recieves an input.
+A tarot deck is split into 2 types of cards, major arcana and minor arcana. Major arcana are used to show major events in ones life, and minor arcana show smaller events.
+Each sensor is linked up with one of the dictionaries used to store the cards information, one sensor for the major arcana, and one sensor for the minor arcana.
