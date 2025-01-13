@@ -1,0 +1,137 @@
+import tkinter as tk
+import random
+import threading
+from pitop import UltrasonicSensor
+from time import sleep
+
+dist_1 = UltrasonicSensor("D1")
+dist_2 = UltrasonicSensor("D2")
+
+minor_tarot_cards = {
+    1 : {"name" : "Ace of Wands", "description" : "Inspiration, New Opportunities, Growth, Potential", "image" : "/home/pi/Downloads/wands-01-ace.png"},
+    2 : {"name" : "Two of Wands", "description" : "Future Planning, Progress, Decisions, Discovery", "image" : "/home/pi/Downloads/wands-02.png"},
+    3 : {"name" : "Three of Wands", "description" : "Progress, Expansion, Foresight, Overseas Opportunities", "image" : "/home/pi/Downloads/wands-03.png"},
+    4 : {"name" : "Four of Wands", "description" : "Celebration, Joy, Harmony, Relaxation, Homecoming", "image" : "/home/pi/Downloads/wands-04.png"},
+    5 : {"name" : "Five of Wands", "description" : "Conflict, Disagreements, Competition, Tension, Diversity", "image" : "/home/pi/Downloads/wands-05.png"},
+    6 : {"name" : "Six of Wands", "description" : "Success, Public Recognition, Progress, Self-Confidence", "image" : "/home/pi/Downloads/wands-06.png"},
+    7 : {"name" : "Seven of Wands", "description" : "Challenge, Competition, Protection, Perseverance", "image" : "/home/pi/Downloads/wands-07.png"},
+    8 : {"name" : "Eight of Wands", "description" : "Movement, Fast Paced, Change, Action", "image" : "/home/pi/Downloads/wands-08.png"},
+    9 : {"name" : "Nine of Wands", "description" : "Resilience, Courage, Persistence, Test of Faith, Boundries", "image" : "/home/pi/Downloads/wands-09.png"},
+    10 : {"name" : "Ten of Wands", "description" : "Burden, Extra Responsibility, Hard Work, Completion", "image" : "/home/pi/Downloads/wands-10.png"},
+    11 : {"name" : "Page of Wands", "description" : "Inspiration, Ideas, Discovery, Limitless, Potential, Free Spirit", "image" : "/home/pi/Downloads/wands-11-page.png"},
+    12 : {"name" : "Knight of Wands", "description" : "Energy, Passion, Inspired Action, Adventure, Impulsiveness", "image" : "/home/pi/Downloads/wands-12-knight.png"},
+    13 : {"name" : "Queen of Wands", "description" : "Courage, Confidence, Independence, Social Butterfly, Determination", "image" : "/home/pi/Downloads/wands-13-queen.png"},
+    14 : {"name" : "King of Wands", "description" : "Natural-Born Leader, Vision, Entrepreneur, Honor", "image" : "/home/pi/Downloads/wands-14-king.png"},
+    15 : {"name" : "Ace of Cups", "description" : "Love, New Relationships, Compassion, Creativity", "image" : "/home/pi/Downloads/cups-01-ace.png"},
+    16 : {"name" : "Two of Cups", "description" : "Unified Love, Partnership, Mutual Attraction", "image" : "/home/pi/Downloads/cups-02.png"},
+    17 : {"name" : "Three of Cups", "description" : "Celebration, Friendship, Creativity, Collaborations", "image" : "/home/pi/Downloads/cups-03.png"},
+    18 : {"name" : "Four of Cups", "description" : "Mediation, Contemplation, Apathy, Re-Evaluation", "image" : "/home/pi/Downloads/cups-04.png"},
+    19 : {"name" : "Five of Cups", "description" : "Regret, Failure, Disapointment, Pessimism", "image" : "/home/pi/Downloads/cups-05.png"},
+    20 : {"name" : "Six of Cups", "description" : "Revisiting the Past, Childhood Memories, Innocence, Joy", "image" : "/home/pi/Downloads/cups-06.png"},
+    21 : {"name" : "Seven of Cups", "description" : "Opportunities, Choices, Wishful Thinking, Illusion", "image" : "/home/pi/Downloads/cups-07.png"},
+    22 : {"name" : "Eight of Cups", "description" : "Disappointment, Abandonment, Withdrawl, Escapism", "image" : "/home/pi/Downloads/cups-08.png"},
+    23 : {"name" : "Nine of Cups", "description" : "Contentment, Satisfaction, Gratitude, Wish Come True", "image" : "/home/pi/Downloads/cups-09.png"},
+    24 : {"name" : "Ten of Cups", "description" : "Divine Love, Blissful Relationships, Harmony, Alignment", "image" : "/home/pi/Downloads/cups-10.png"},
+    25 : {"name" : "Page of Cups", "description" : "Creative Opportunities, Intuitive, Curiosity, Possibility", "image" : "/home/pi/Downloads/cups-11-page.png"},
+    26 : {"name" : "Knight of Cups", "description" : "Creativity, Romance, Charm, Imagination, Beauty", "image" : "/home/pi/Downloads/cups-12-knight.png"},
+    27 : {"name" : "Queen of Cups", "description" : "Compassionate, Caring, Emotionally Stable, Intuitive", "image" : "/home/pi/Downloads/cups-13-queen.png"},
+    28 : {"name" : "King of Cups", "description" : "Emotionally Balanced, Compassionate, Diplomatic", "image" : "/home/pi/Downloads/cups-14-king.png"},
+    29 : {"name" : "Ace of Swords", "description" : "Breakthrough, Mental Clarity, Success", "image" : "/home/pi/Downloads/swords-01-ace.png"},
+    30 : {"name" : "Two of Swords", "description" : "Difficult Decisions, Weighing Options, Avoidance, Impasse", "image" : "/home/pi/Downloads/swords-02.png"},
+    31 : {"name" : "Three of Swords", "description" : "Heartbreak, Emotional Pain, Grief, Sorrow, Hurt", "image" : "/home/pi/Downloads/swords-03.png"},
+    32 : {"name" : "Four of Swords", "description" : "Rest, Relaxation, Meditation, Contemplation, Recuperation", "image" : "/home/pi/Downloads/swords-04.png"},
+    33 : {"name" : "Five of Swords", "description" : "Conflict, Disagreement, Competition", "image" : "/home/pi/Downloads/swords-05.png"},
+    34 : {"name" : "Six of Swords", "description" : "Transition, Change, Rite of Passage, Releasing Baggage", "image" : "/home/pi/Downloads/swords-06.png"},
+    35 : {"name" : "Seven of Swords", "description" : "Betrayal, Deception, Strategic", "image" : "/home/pi/Downloads/swords-07.png"},
+    36 : {"name" : "Eight of Swords", "description" : "Negative Thoughts, Self-Imposed Restriction, Imprisonment, Victim Mentality", "image" : "/home/pi/Downloads/swords-08.png"},
+    37 : {"name" : "Nine of Swords", "description" : "Anxiety, Worry, Fear, Depression, Nightmares", "image" : "/home/pi/Downloads/swords-09.png"},
+    38 : {"name" : "Ten of Swords", "description" : "Painful Endings, Deep Wounds, Betrayal, Loss, Crisis", "image" : "/home/pi/Downloads/swords-10.png"},
+    39 : {"name" : "Page of Swords", "description" : "New Ideas, Curiosity, Thirst for Knowledge", "image" : "/home/pi/Downloads/swords-11-page.png"},
+    40 : {"name" : "Knight of Swords", "description" : "Ambitious, Action-Oriented, Driven, Quick-Thinking", "image" : "/home/pi/Downloads/swords-12-knight.png"},
+    41 : {"name" : "Queen of Swords", "description" : "Independent, Unbiased, Judgement, Clear Boundaries, Direct Communication", "image" : "/home/pi/Downloads/swords-13-queen.png"},
+    42 : {"name" : "King of Swords", "description" : "Mental Clarity, Intellectual, Power, Authority, Truth", "image" : "/home/pi/Downloads/swords-14-king.png"},
+    43 : {"name" : "Ace of Pentacles", "description" : "Financial Opporunity, Manifestation, Abundance", "image" : "/home/pi/Downloads/pentacles-01-ace.png"},
+    44 : {"name" : "Two of Pentacles", "description" : "Multiple Priorities, Time Management, Adaptability", "image" : "/home/pi/Downloads/pentacles-02.png"},
+    45 : {"name" : "Three of Pentacles", "description" : "Teamwork, Collaboration, Learning", "image" : "/home/pi/Downloads/pentacles-03.png"},
+    46 : {"name" : "Four of Pentacles", "description" : "Saving Money, Security, Control", "image" : "/home/pi/Downloads/pentacles-04.png"},
+    47 : {"name" : "Five of Pentacles", "description" : "Financial Loss, Poverty, Isolation", "image" : "/home/pi/Downloads/pentacles-05.png"},
+    48 : {"name" : "Six of Pentacles", "description" : "Giving, Receiving, Sharing, Wealth, Generosity, Charity", "image" : "/home/pi/Downloads/pentacles-06.png"},
+    49 : {"name" : "Seven of Pentacles", "description" : "Long Term View, Sustainability, Results, Perseverence, Investment", "image" : "/home/pi/Downloads/pentacles-07.png"},
+    50 : {"name" : "Eight of Pentacles", "description" : "Apprenticeship, Rpeative, Skill Development", "image" : "/home/pi/Downloads/pentacles-08.png"},
+    51 : {"name" : "Nine of Pentacles", "description" : "Abudance, Luxury, Financial Independence", "image" : "/home/pi/Downloads/pentacles-09.png"},
+    52 : {"name" : "Ten of Pentacles", "description" : "Wealth, Financial Security, Family, Success, Contribution", "image" : "/home/pi/Downloads/pentacles-10.png"},
+    53 : {"name" : "Page of Pentacles", "description" : "Manifestation, Financial Opportunity", "image" : "/home/pi/Downloads/pentacles-11-page.png"},
+    54 : {"name" : "Knight of Pentacles", "description" : "Hard Work, Productivity, Routine", "image" : "/home/pi/Downloads/pentacles-12-knight.png"},
+    55 : {"name" : "Queen of Pentacles", "description" : "Nurturing, Practical, Providing Financially", "image" : "/home/pi/Downloads/pentacles-13-queen.png"},
+    56 : {"name" : "King of Pentacles", "description" : "Wealth, Business, Leadership, Security, Discipline, Abundance", "image" : "/home/pi/Downloads/pentacles-14-king.png"}
+}
+
+major_tarot_cards = {
+    1 : {"name" : "The Fool", "description" : "Innocence, New Beginnings, Free Spirit", "image" : "/home/pi/Downloads/0-fool.png"},
+    2 : {"name" : "The Magician", "description" : "SWillpower, Desire, Creation, Manifestation", "image" : "/home/pi/Downloads/01-magician.png"},
+    3 : {"name" : "The High Priestess", "description" : "Intuitive, Inner Voice", "image" : "/home/pi/Downloads/02-highpriestess.png"},
+    4 : {"name" : "The Empress", "description" : "Motherhood, Fertility, Nature", "image" : "/home/pi/Downloads/03-empress.png"},
+    5 : {"name" : "The Emperor", "description" : "Authority, Structure, Control, Fatherhood", "image" : "/home/pi/Downloads/04-emperor.png"},
+    6 : {"name" : "The Hierophant", "description" : "Tradition, Conformity, Morality, Ethics", "image" : "/home/pi/Downloads/05-hierophant.png"},
+    7 : {"name" : "The Lovers", "description" : "Partnerships, Duality, Union", "image" : "/home/pi/Downloads/06-lovers.png"},
+    8 : {"name" : "The Chariot", "description" : "Direction, Control, Willpower", "image" : "/home/pi/Downloads/07-chariot.png"},
+    9 : {"name" : "Strength", "description" : "Inner Strength, Bravery, Compassion, Focus", "image" : "/home/pi/Downloads/08-strength.png"},
+    10 : {"name" : "The Hermit", "description" : "Contemplation, Search for Truth, Inner Guidence", "image" : "/home/pi/Downloads/09-hermit.png"},
+    11 : {"name" : "The Wheel of Fortune", "description" : "Change, Cycles, Inevitable Fate", "image" : "/home/pi/Downloads/10-wheel.png"},
+    12 : {"name" : "Justice", "description" : "Cause and Effect, Clarity, Truth", "image" : "/home/pi/Downloads/11-justice.png"},
+    13 : {"name" : "The Hanged Man", "description" : "Sacrifice, Release, Self Inflicted Downfall", "image" : "/home/pi/Downloads/12-hanged-man.png"},
+    14 : {"name" : "Death", "description" : "Death, End, Rebirth, Change", "image" : "/home/pi/Downloads/13-death.png"},
+    15 : {"name" : "Temperance", "description" : "Middle Path, Patience, Finding Meaning", "image" : "/home/pi/Downloads/14-temperance.png"},
+    16 : {"name" : "The Devil", "description" : "Addiction, Materialism, Playfulness", "image" : "/home/pi/Downloads/15-devil.png"},
+    17 : {"name" : "The Tower", "description" : "Disaster, Chaos", "image" : "/home/pi/Downloads/16-tower.png"},
+    18 : {"name" : "The Star", "description" : "Hope, Faith, Rejuvenation, Wish", "image" : "/home/pi/Downloads/17-star.png"},
+    19 : {"name" : "The Moon", "description" : "Illusions, Intuition", "image" : "/home/pi/Downloads/18-moon.png"},
+    20 : {"name" : "The Sun", "description" : "Joy, Success, Celebration, Positivity", "image" : "/home/pi/Downloads/19-sun.png"},
+    21 : {"name" : "Judgement", "description" : "Reflection, Reckoning, Awakening, Karma", "image" : "/home/pi/Downloads/20-judgement.png"},
+    22 : {"name" : "The World", "description" : "Fulfillment, Harmony, Completion", "image" : "/home/pi/Downloads/21-world.png"},
+}
+
+def draw_card(deck):
+    random_card_number = random.randint(1, len(deck))
+    card = deck[random_card_number]
+
+    name_label.config(text = f"Name: {card['name']}")
+    description_label.config(text = f"Description: {card['description']}")
+
+    img = tk.PhotoImage(file = card["image"])
+    img = img.subsample(2, 2)
+
+    img_label.config(image = img)
+    img_label.image = img
+
+def sensor_loop():
+    while True:
+        d1 = dist_1.distance
+        d2 = dist_2.distance
+        if d1 < 0.2:
+            draw_card(minor_tarot_cards)
+            print("Hand Detected. Minor Arcana Drawn")
+        elif d2 < 0.2:
+            draw_card(major_tarot_cards)
+            print("Hand Detected. Major Arcana Drawn")
+        else:
+            print("Out of Range")
+        sleep(2)
+
+
+window = tk.Tk()
+window.title("Tarot Card Reading")
+
+img_label = tk.Label(window)
+img_label.pack(pady = 20)
+
+name_label = tk.Label(window, text = "", font = ("Arial", 20))
+name_label.pack(pady = 10)
+
+description_label = tk.Label(window, text = "", wraplength = 400, font = ("Arial", 14))
+description_label.pack(pady = 10)
+
+sensor_thread = threading.Thread(target = sensor_loop, daemon = True)
+sensor_thread.start()
+
+window.mainloop()
