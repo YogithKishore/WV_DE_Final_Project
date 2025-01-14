@@ -13,4 +13,4 @@ Each of those cards is then placed in one of two dictionaries, based on major an
 Then by randomizing a number when a sensor recieves an input, you can randomly pick a card.
 After picking a card, the code uses imports to create a window that displays the card's name, description, and image on the FHD display.
 
-[https://drive.google.com/file/d/1y_EjLaNfwjW5f8i2UImtc1b-Iu9Ve7qz/view?usp=sharing](url)
+https://drive.google.com/file/d/1y_EjLaNfwjW5f8i2UImtc1b-Iu9Ve7qz/view?usp=sharing
